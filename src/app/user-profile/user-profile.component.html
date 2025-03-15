@@ -1,0 +1,79 @@
+<div *ngIf="myPage" class="container">
+    <h1>Мій профіль</h1>
+    <div class="gallery-container">
+      <img [src]="currentPhotoRoman" alt="Gallery Photo" />
+    </div>
+    <div class="mb-4">
+        <p>Логін: {{ myProfile.login }} </p>
+        <p>Ім'я: {{ myProfile.name }}</p>
+        <p>Контактна електронна адреса: {{ myProfile.email}} </p>
+        <p>Дата народження: {{ myProfile.birthDate }}</p>
+        <p>Про себе: {{ myProfile.description }}</p>
+    </div>
+    <div class="mb-4">
+        <button class="btn btn-primary mr-3" (click)="startUpdate()">Редагувати профіль</button>
+        <button class="btn btn-primary mr-3" >Змінити пароль</button>
+        <button class="btn btn-danger" >Видалити профіль</button>
+    </div>
+</div>
+
+<div *ngIf="!myPage" class="container">
+    <h1>Профіль користувача {{ userProfile.login }}</h1>
+    <div class="gallery-container">
+      <img [src]="currentPhotoOther" alt="Gallery Photo" />
+    </div>
+    <div class="mb-4">
+        <p>Ім'я: {{ userProfile.name }}</p>
+        <p>Контактна електронна адреса: {{mail}} </p>
+        <p>Вік: {{ userProfile.ageInTens }}</p>
+        <p>Про {{ userProfile.name }}: {{ userProfile.description }}</p>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': editModalVisible }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Редагування власного профілю</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelUpdate()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="foodName">Ім'я:</label>
+            <input type="text" class="form-control" id="foodName" [(ngModel)]="editUser.name">
+          </div>
+          <div class="form-group">
+            <label for="foodName">Контактна електронна адреса:</label>
+            <input type="text" class="form-control" id="foodName" [(ngModel)]="editUser.email">
+          </div>
+          <div class="form-group">
+            <label for="foodName">Дата народження:</label>
+            <input type="date" class="form-control" id="foodName" [(ngModel)]="editUser.birthDate">
+          </div>
+          <div class="form-group">
+            <label for="foodDescription">Про себе:</label>
+            <textarea class="form-control" id="foodDescription" [(ngModel)]="editUser.description"></textarea>
+          </div>
+          <div class="form-group">
+            <input type="file">
+            <div class="mb-5">
+                <img alt="Profile Icon" class="img-fluid">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" class="form-control" id="password" [(ngModel)]="editUser.hashPassword">
+          </div> 
+          <div *ngIf="exVisible" class="alert alert-danger" role="alert">
+            Пароль не вірний !
+          </div>    
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="update()">Ok</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelUpdate()">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>

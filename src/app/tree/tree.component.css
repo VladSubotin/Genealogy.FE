@@ -1,0 +1,17 @@
+.svg-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 0px;
+}
+.controls {
+  margin-left: 16px;
+}
+svg {
+  border: 2px solid black;
+  box-sizing: border-box; 
+  cursor: grab;
+}
+svg:active {
+  cursor: grabbing;
+}
+

@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="list-container">
+    <div class="form-group form-check mb-3">
+      Адміністратор: {{admin.userName}}
+    </div>
+    <div class="form-group form-check mb-3">
+      <button *ngIf="role === 'Moderator' || role === 'Admin'" class="btn btn-primary btn-sm" (click)="addMemberStart()">Додати нового учасника</button>
+    </div>
+    <div class="form-group form-check mb-3">
+      <input type="text" class="form-control mb-3" placeholder="Пошук" [(ngModel)]="searchQuery" (input)="filterList()" />
+    </div>
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let member of filteredMembers">
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <div>
+            {{ member.userName }}
+            <div *ngIf="role !== 'Member' && role !== 'Admin'">
+              <p>{{ member.userRole === 'Moderator' ? 'Модератор' : 'Учасник' }}</p>
+            </div>
+            <select *ngIf="role === 'Moderator' || role === 'Admin'" class="form-control" id="privacyType" [(ngModel)]="member.userRole">
+              <option [ngValue]="'Moderator'">Модератор</option>
+              <option [ngValue]="'Member'">Учасник</option>
+            </select>
+          </div>
+          <div>
+            <button class="btn btn-secondary btn-sm" (click)="seeMember(member?.userLogin)">Деталі</button>
+            <button *ngIf="role === 'Moderator' || role === 'Admin'" class="btn btn-secondary btn-sm" (click)="deleteMember(member?.id)">Видалити</button>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': addModalVisible }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Додання нового учаснику:</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelAdding()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="foodName">Логін:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="newMember.userLogin">
+              </div>
+              <div class="form-group">
+                <label for="privacyType">Роль:</label>
+                <select [(ngModel)]="newMember.role">
+                    <option [ngValue]="'Moderator'">Модератор</option>
+                    <option [ngValue]="'Member'">Учасник</option>
+                  </select>
+              </div>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="addMember()">Ok</button>
+          <div *ngIf="alreadyExist" class="alert alert-danger" role="alert">
+            Користувач вже є учасником профілю !
+          </div> 
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelAdding()">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>

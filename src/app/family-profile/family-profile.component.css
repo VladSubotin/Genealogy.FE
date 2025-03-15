@@ -1,0 +1,59 @@
+.sidebar {
+    position: fixed;
+    top: 56px; /* Высота верхнего меню */
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    width: 250px; /* Ширина бокового меню */
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .main-content {
+    margin-left: 250px; /* Ширина бокового меню */
+    margin-top: 56px; /* Высота верхнего меню */
+  }
+  
+  
+  
+  .nav-link {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .nav-link:hover {
+    color: #007bff;
+  }
+  
+
+  .gallery-container {
+    display: flex;
+    align-items: right;
+    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .gallery-container img {
+    max-width: 100px;
+    max-height: 100px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 20px 0;
+    object-fit: cover; /* This will ensure the image fits within the specified dimensions without distortion */
+  }
+  
+  .gallery-container button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .gallery-container button:hover {
+    background-color: #0056b3;
+  }

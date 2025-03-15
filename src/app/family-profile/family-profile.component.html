@@ -1,0 +1,110 @@
+<div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" (click)="changePage('Profile')">Профіль родини</a>
+            </li>
+            <li class="nav-item" *ngIf="familyProfile && (familyProfile.myRole === 'Member' || familyProfile.myRole === 'Admin' || familyProfile.myRole === 'Moderator')">
+              <a class="nav-link" (click)="changePage('Members')">Учасники</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" (click)="changePage('Tree')">Особи в родині</a>
+            </li>
+            <li class="nav-item" (click)="changePage('Tasks')" *ngIf="familyProfile && (familyProfile.myRole === 'Member' || familyProfile.myRole === 'Admin' || familyProfile.myRole === 'Moderator')">
+              <a class="nav-link" routerLink="/research-plan">План дослідження</a>
+            </li>
+            <li class="nav-item" *ngIf="familyProfile && (familyProfile.myRole === 'Member' || familyProfile.myRole === 'Moderator')">
+              <a class="nav-link" routerLink="/research-plan">Покинути родину</a>
+            </li>
+            <li class="nav-item" *ngIf="familyProfile && (familyProfile.myRole === 'Admin')">
+              <a class="nav-link" routerLink="/research-plan">Передати права адміністратора</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+  
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 main-content">
+
+
+        <div *ngIf="visiblePage === 'Profile'" class="container">
+            <h1>Профіль родини {{ familyProfile.name | uppercase }}</h1>
+            <div *ngIf="familyProfile.myRole !== 'Guest'" class="gallery-container">
+              <img [src]="currentPhotoMyFam" alt="Gallery Photo" />
+            </div>
+            <div *ngIf="familyProfile.myRole === 'Guest'" class="gallery-container">
+              <img [src]="currentPhotoNotMyFam" alt="Gallery Photo" />
+            </div>
+            <div *ngIf="familyProfile.myRole === 'Member'" class="mb-4">Ваша роль: Учасник</div>
+            <div *ngIf="familyProfile.myRole === 'Moderator'" class="mb-4">Ваша роль: Модератор</div>
+            <div *ngIf="familyProfile.myRole === 'Admin'" class="mb-4">Ваша роль: Адміністратор</div>
+            <div *ngIf="familyProfile.myRole === 'Guest'" class="mb-4">Ви не є учасником цього профілю</div>
+            <button *ngIf="familyProfile.myRole === 'Guest'" class="btn btn-primary mb-4" (click)="sendJoinRequest()">Надіслати запит на приєднання</button>
+            <div *ngIf="familyProfile.admin" class="mb-4">
+                <div *ngIf="familyProfile.myRole !== 'Admin'">Адміністратор: <a [routerLink]="['/user-profile', familyProfile.admin.userLogin]">{{ familyProfile.admin.userName }}</a></div>
+            </div>
+            <p class="mb-4">Про {{ familyProfile.name }}: {{ familyProfile.description }}</p>
+            <div class="mb-4">
+                <button *ngIf="familyProfile.myRole === 'Admin' || familyProfile.myRole === 'Moderator'" class="btn btn-primary mr-3" (click)="editProfile()">Редагувати профіль</button>
+                <button *ngIf="familyProfile.myRole === 'Admin'" class="btn btn-danger" (click)="deleteProfile()">Видалити профіль</button>
+            </div>
+        </div>
+        
+        <div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': editModalVisible }">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Редагування сімейного профілю</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelEdit()">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="foodName">Назва:</label>
+                  <input type="text" class="form-control" id="foodName" [(ngModel)]="familyProfile.name">
+                </div>
+                <div class="form-group">
+                  <label for="foodDescription">Про родину:</label>
+                  <textarea class="form-control" id="foodDescription" [(ngModel)]="familyProfile.description"></textarea>
+                </div>
+                <div class="form-group">
+                  <input type="file" (change)="onFileSelected($event)">
+                  <div *ngIf="familyProfile.profileIcon" class="mb-5">
+                      <img [src]="arrayBufferToBase64(familyProfile.profileIcon)" alt="Profile Icon" class="img-fluid">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="privacyType">Тип приватності:</label>
+                  <select *ngIf="familyProfile.myRole === 'Admin'" class="form-control" id="privacyType" [(ngModel)]="familyProfile.privacyLevel">
+                    <option [ngValue]="0">Публічний</option>
+                    <option [ngValue]="1">Приватний</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="editFamily()">Ok</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelEdit()">cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+        <app-tree *ngIf="visiblePage === 'Tree'" [role]="familyProfile.myRole || 'Guest'" [familyId]="familyProfile.id"></app-tree>
+        <app-members *ngIf="visiblePage === 'Members'" [role]="familyProfile.myRole || 'Guest'" [familyId]="familyProfile.id"></app-members>
+        <app-tasks *ngIf="visiblePage === 'Tasks'" [role]="familyProfile.myRole || 'Guest'" [familyId]="familyProfile.id"></app-tasks>
+
+      </main>
+    </div>
+  </div>
+  

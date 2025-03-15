@@ -1,0 +1,40 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .list-container {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    overflow-y: auto;
+  }
+  
+  .list-group-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+  }
+  
+  .list-group-item:not(:last-child) {
+    margin-bottom: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .btn {
+    margin-right: 5px;
+  }
+  
+  ul.list-group ul.list-group {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+  
+  ul.list-group ul.list-group .list-group-item {
+    margin-bottom: 5px;
+  }

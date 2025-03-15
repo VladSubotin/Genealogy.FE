@@ -1,0 +1,108 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Основной контент -->
+    <div class="col-md-9">
+      <div>
+        <button (click)="zoomIn()">+</button>
+        <button (click)="zoomOut()">-</button>
+      </div>
+      <div class="svg-container">
+        <svg [attr.width]="width" [attr.height]="height" [attr.viewBox]="viewBox"     
+            (mousedown)="startPan($event)" 
+            (mousemove)="pan($event)" 
+            (mouseup)="endPan()" 
+            (mouseleave)="endPan()">
+          <ng-container *ngFor="let node of treeNodes">
+            <rect [attr.x]="node.x" [attr.y]="node.y" width="50" height="50" fill="lightblue" stroke="black"/>
+            <rect [attr.x]="node.x + 50" [attr.y]="node.y + 5" width="20" height="10" fill="lightgrey" stroke="black" (click)="seePerson(node.id)"/>
+            <text [attr.x]="node.x + 50" [attr.y]="node.y + 13" fill="black" [attr.font-size]="5" style="user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;" (click)="seePerson(node.id)"> Деталі </text>
+            <rect [attr.x]="node.x + 50" [attr.y]="node.y + 20" width="20" height="10" fill="lightgrey" stroke="black" (click)="buildTree(node.id)"/>
+            <text [attr.x]="node.x + 50" [attr.y]="node.y + 28" fill="black" [attr.font-size]="5" style="user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;" (click)="buildTree(node.id)"> Дерево </text>
+            <rect [attr.x]="node.x + 50" [attr.y]="node.y + 35" width="20" height="10" fill="lightgrey" stroke="black" *ngIf="role === 'Member' || role === 'Admin' || role === 'Moderator'" (click)="addRelatedPerson(node.id)"/>
+            <text [attr.x]="node.x + 50" [attr.y]="node.y + 43" fill="black" [attr.font-size]="5" style="user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;" *ngIf="role === 'Member' || role === 'Admin' || role === 'Moderator'" (click)="addRelatedPerson(node.id)"> +Родич </text>
+            <ng-container *ngIf="node.name">
+              <text *ngFor="let line of splitName(node.name); let i = index"
+                    [attr.x]="node.x + 5"
+                    [attr.y]="node.y + 10 + (i * 10)"
+                    fill="black"
+                    [attr.font-size]="8"
+                    style="user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;">
+                {{ line }}
+              </text>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngFor="let line of lines">
+            <line [attr.x1]="line.startX" [attr.y1]="line.startY" [attr.x2]="line.startX" [attr.y2]="(line.startY + line.endY) / 2" stroke="black"/>
+            <line [attr.x1]="line.startX" [attr.y1]="(line.startY + line.endY) / 2" [attr.x2]="line.endX" [attr.y2]="(line.startY + line.endY) / 2" stroke="black"/>
+            <line [attr.x1]="line.endX" [attr.y1]="line.endY" [attr.x2]="line.endX" [attr.y2]="(line.startY + line.endY) / 2" stroke="black"/>
+          </ng-container>
+        </svg>
+      </div>
+    </div>
+    <!-- Список справа -->
+    <div class="col-md-3">
+      <div class="list-container" style="height: 600px; overflow-y: auto;">
+        <button class="btn btn-primary mb-3" (click)="addPerson(null, null, null)">Додати нову особу</button>
+        <input type="text" class="form-control mb-3" placeholder="Пошук" [(ngModel)]="searchQuery" (input)="filterList()" />
+        <ul class="list-group">
+          <li class="list-group-item" *ngFor="let person of filteredPersons">
+            {{ person.fullName?.trim() !== '' ? person.fullName : 'Невідомо Невідомо' }}
+            <div class="btn-group float-end">
+              <button class="btn btn-secondary btn-sm" (click)="seePerson(person.id)">Деталі</button>
+              <button class="btn btn-secondary btn-sm" (click)="buildTree(person.id)">Дерево</button>
+              <button *ngIf="role === 'Member' || role === 'Admin' || role === 'Moderator'" class="btn btn-secondary btn-sm" (click)="addRelatedPerson(person.id)">Додати родича</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': addModalVisible }">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Додання нового зв'язку:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelAdding()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="privacyType">Тип зв'язку:</label>
+          <select class="form-control" [(ngModel)]="relType">
+            <option [ngValue]="'Father'">Батько</option>
+            <option [ngValue]="'Mother'">Мати</option>
+            <option [ngValue]="'Partner'">Партнер</option>
+            <option [ngValue]="'Ex-partner'">Екс партнер</option>
+            <option [ngValue]="'Child'">Дитина</option>
+            <option [ngValue]="'Other'">Інше</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group form-check mt-3">
+        <input type="checkbox" class="form-check-input" id="addNewPersonCheck" [(ngModel)]="addNewRelative">
+        <label class="form-check-label" for="addNewPersonCheck">Додати зв'язок з новою особою ?</label>
+      </div>
+      <div *ngIf="!addNewRelative" class="modal-body">
+        <div class="form-group">
+          <label for="privacyType">Оберіть особу:</label>
+          <select class="form-control" [(ngModel)]="sPerId">
+            <option *ngFor="let person of persons" [ngValue]="person.id">
+              {{ person.fullName?.trim() !== '' ? person.fullName : 'Невідомо Невідомо' }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div *ngIf="errorRelVis" class="alert alert-danger" role="alert">
+        Якщо особи мають спільного предка, або нащадка - їх неможлимо зробити предком або нащадком один одному !
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addPerson(relId, relType, sPerId)">Ok</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelAdding()">cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

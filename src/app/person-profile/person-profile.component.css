@@ -1,0 +1,58 @@
+.profile-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sec-gr {
+    margin-bottom: 1rem;
+  }
+  
+  .version-card {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+  }
+
+  .btn {
+    margin-left: 5px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+
+
+  .gallery-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .gallery-container img {
+    max-width: 500px;
+    max-height: 500px;
+    width: 500px;
+    height: 500px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 20px 0;
+    object-fit: cover; /* This will ensure the image fits within the specified dimensions without distortion */
+  }
+  
+  .gallery-container button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .gallery-container button:hover {
+    background-color: #0056b3;
+  }
+  

@@ -1,0 +1,345 @@
+<div class="container mt-5">
+  <div class="profile-container p-4 border rounded" style="background-color: #f9f9f9;">
+    <h1>{{ personProfile.fullName }}</h1>
+    <p>
+      Знаходиться в сім'ї: 
+      <a [routerLink]="['/family-profile', personProfile.familyId]">
+        {{ personProfile.familyName }}
+      </a>
+    </p>
+    
+    <div *ngIf="isEditing">
+      <div class="form-group">
+        <label for="privacyType">Біологічна стать:</label>
+        <select class="form-control" [(ngModel)]="editableProfile.gender">
+          <option [ngValue]="'Male'">Чоловіча</option>
+          <option [ngValue]="'Female'">Жіноча</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="prefix">Префікс:</label>
+        <input id="prefix" class="form-control" [(ngModel)]="editableProfile.prefix" />
+      </div>
+
+      <div class="form-group">
+        <label for="firstName">Імена:</label>
+        <div class="sec-gr" *ngFor="let name of editableProfile.names; let i = index">
+          <ng-container *ngIf="name.nameType === 'FirstName'">
+            <div class="form-group row align-items-center">
+              <div class="col">
+                <input class="form-control" [(ngModel)]="name.name" />
+              </div>
+              <div class="col">
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input" [(ngModel)]="name.isMain" />
+                  Актуальне
+                </label>
+              </div>
+              <div class="col-auto">
+                <button type="button" class="btn btn-danger" (click)="confirmDeleteName(i)">Видалити</button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="middleName">Другі імена:</label>
+        <div class="sec-gr" *ngFor="let name of editableProfile.names; let i = index">
+          <ng-container *ngIf="name.nameType === 'MidleName'">
+            <div class="form-group row align-items-center">
+              <div class="col">
+                <input class="form-control" [(ngModel)]="name.name" />
+              </div>
+              <div class="col">
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input" [(ngModel)]="name.isMain" />
+                  Актуальне
+                </label>
+              </div>
+              <div class="col-auto">
+                <button type="button" class="btn btn-danger" (click)="confirmDeleteName(i)">Видалити</button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="lastName">Прізвища:</label>
+        <div class="sec-gr" *ngFor="let name of editableProfile.names; let i = index">
+          <ng-container *ngIf="name.nameType === 'LastName'">
+            <div class="form-group row align-items-center">
+              <div class="col">
+                <input class="form-control" [(ngModel)]="name.name" />
+              </div>
+              <div class="col">
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input" [(ngModel)]="name.isMain" />
+                  Актуальне
+                </label>
+              </div>
+              <div class="col-auto">
+                <button type="button" class="btn btn-danger" (click)="confirmDeleteName(i)">Видалити</button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="addName">Додати нове ім'я:</label>
+        <div class="row align-items-center sec-gr">
+          <div class="col">
+            <input id="addName" class="form-control" [(ngModel)]="newName.name" placeholder="Ім'я" />
+          </div>
+          <div class="col">
+            <select class="form-control" [(ngModel)]="newName.nameType">
+              <option value="FirstName">Ім'я</option>
+              <option value="MidleName">Друге ім'я</option>
+              <option value="LastName">Прізвище</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <label class="form-check-label">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="newName.isMain" />
+              Актуальне
+            </label>
+          </div>
+          <div class="col-auto">
+            <button type="button" class="btn btn-primary" (click)="addName()">Ок</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="suffix">Суфікс:</label>
+        <input id="suffix" class="form-control" [(ngModel)]="editableProfile.suffix" />
+      </div>
+      
+      <div class="form-group">
+        <label for="nationality">національність:</label>
+        <input id="nationality" class="form-control" [(ngModel)]="editableProfile.nationality" />
+      </div>
+      <div class="form-group">
+        <label for="religion">Релігійне сповідання:</label>
+        <input id="religion" class="form-control" [(ngModel)]="editableProfile.religion" />
+      </div>
+      <div class="form-group">
+        <label for="biography">Біографія:</label>
+        <textarea id="biography" class="form-control" [(ngModel)]="editableProfile.biography"></textarea>
+      </div>
+        <div *ngIf="personId === '46c16e29-89ae-40c6-a9a1-0033ab42c0f2'" class="gallery-container">
+            <img [src]="currentPhotoP" alt="Gallery Photo" />
+            <div class="controls">
+              <button (click)="prevPhotoP()"><</button>
+              {{currentIndex + 1}} / {{photosP.length}}
+              <button (click)="nextPhotoP()">></button>
+            </div>
+            <button type="button" class="btn btn-danger" (click)="deletePhoto()">Видалити це фото</button>
+        </div>
+        <div *ngIf="personId === '9f176bca-4cbc-40e2-89f0-36a38887c29b'" class="gallery-container">
+          <img [src]="currentPhotoV" alt="Gallery Photo" />
+          <div class="controls">
+            <button (click)="prevPhotoV()"><</button>
+            {{currentIndex + 1}} / {{photosV.length}}
+            <button (click)="nextPhotoV()">></button>
+          </div>
+          <button type="button" class="btn btn-danger" (click)="deletePhoto()">Видалити це фото</button>
+      </div>
+      <div class="form-group">
+        Додати фото:
+        <input type="file" (change)="onFileSelected($event)">
+        <div *ngIf="image" class="mb-3">
+          <img [src]="arrayBufferToBase64(image)" alt="нове фото" class="img-fluid">
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!isEditing">
+      <div *ngIf="personId === '46c16e29-89ae-40c6-a9a1-0033ab42c0f2'" class="gallery-container">
+          <img [src]="currentPhotoP" alt="Gallery Photo" />
+          <div class="controls">
+            <button (click)="prevPhotoP()"><</button>
+            {{currentIndex + 1}} / {{photosP.length}}
+            <button (click)="nextPhotoP()">></button>
+          </div>
+      </div>
+      <div *ngIf="personId === '9f176bca-4cbc-40e2-89f0-36a38887c29b'" class="gallery-container">
+        <img [src]="currentPhotoV" alt="Gallery Photo" />
+        <div class="controls">
+          <button (click)="prevPhotoV()"><</button>
+          {{currentIndex + 1}} / {{photosV.length}}
+          <button (click)="nextPhotoV()">></button>
+        </div>
+    </div>
+      <p>Біологічна стать: {{ getGenderLabel(personProfile.gender || "") }}</p>
+      <p>національність: {{ personProfile.nationality }}</p>
+      <p>Релігійне сповідання: {{ personProfile.religion }}</p>
+      <p>Біографія: {{ personProfile.biography }}</p>        
+    </div>
+
+    <div class="form-group">
+      <label for="facts">Факти:</label>
+      <div *ngFor="let fact of editableProfile.facts; let factIndex = index">
+        <div class="card mb-3">
+          <div class="card-header">{{ factTypeMap[fact.factType || ""] }}</div>
+          <div class="card-body">
+            
+            <div *ngIf="isEditing" class="form-group">
+              <button type="button" class="btn btn-danger" (click)="deleteFact(factIndex)">Видалити факт</button>
+            </div>
+
+            <div *ngFor="let version of fact.versions; let i = index" class="version-card mb-3 p-2 border rounded">
+              <label for="version">Версія {{i+1}}</label>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col">
+                    <label>Початкова дата:</label>
+                    <input type="date" class="form-control" [(ngModel)]="version.dateFrom" [disabled]="!isEditing" />
+                  </div>
+                  
+                  <div class="col">
+                      <label>Кінцева дата:</label>
+                      <input type="date" class="form-control" [(ngModel)]="version.dateTo" [disabled]="!isEditing" />
+                  </div>
+                  <div *ngIf="dateRangeValidator(version.dateFrom, version.dateTo)" class="alert alert-danger" role="alert">
+                    Початкова дата повинна бути не пізніша за кінцеву !
+                  </div>
+                  <div class="form-group">
+                    <label>Місце:</label>
+                    <input class="form-control" [(ngModel)]="version.location" [disabled]="!isEditing" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Нотаток:</label>
+                  <textarea class="form-control" [(ngModel)]="version.note" [disabled]="!isEditing"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Джерело:</label>
+                  <input class="form-control" [(ngModel)]="version.source" [disabled]="!isEditing" />
+                </div>
+                <div *ngFor="let conflict of version.conflictVersions">
+                  <div *ngIf="!isEditing && isVarning" (click)="redirectToConflictVersion(conflict)">
+                      <div *ngIf="conflict.conflictRelative === null" class="alert alert-danger" role="alert">
+                          {{ conflict.message }}  {{conflictVersion(conflict.conflictVersionId)}}!
+                      </div>
+                      <div *ngIf="conflict.conflictRelative !== null" class="alert alert-danger" role="alert">
+                          {{ conflict.message }} {{conflict.conflictRelative?.fullName}}!
+                      </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-danger" (click)="removeVersion(fact, i)" *ngIf="isEditing">Видалити версію</button>
+              </div>
+            </div>
+            <div *ngIf="isEditing" class="form-group">
+              <!-- Кнопка для добавления новой версии -->
+              <button type="button" *ngIf="isEditing" class="btn btn-primary" (click)="toggleAddingVersion()">Додати нову версію</button>
+            </div>
+              <!-- Добавление новой версии факта -->
+              <div class="form-group" *ngIf="isAddingNewVersion">
+                  <label>Додати нову версію факта:</label>
+                  <div class="row">
+                  <div class="col">
+                      <label>Початкова дата:</label>
+                      <input type="date" class="form-control" [(ngModel)]="newVersion.dateFrom" />
+                  </div>
+                  <div class="col">
+                      <label>Кінцева дата:</label>
+                      <input type="date" class="form-control" [(ngModel)]="newVersion.dateTo" />
+                  </div>
+                  <div *ngIf="dateRangeValidator(newVersion.dateFrom, newVersion.dateTo)" class="alert alert-danger" role="alert">
+                    Початкова дата повинна бути не пізніша за кінцеву !
+                  </div>
+                  </div>
+                  <div class="form-group">
+                  <label>Місце:</label>
+                  <input class="form-control" [(ngModel)]="newVersion.location" />
+                  </div>
+                  <div class="form-group">
+                  <label>Нотаток:</label>
+                  <textarea class="form-control" [(ngModel)]="newVersion.note"></textarea>
+                  </div>
+                  <div class="form-group">
+                  <label>Джерело:</label>
+                  <input class="form-control" [(ngModel)]="newVersion.source" />
+                  </div>
+                  <button type="button" class="btn btn-success" (click)="addVersion(factIndex)" [disabled]="dateRangeValidator(newVersion.dateFrom, newVersion.dateTo)">Додати версію</button>
+                  <button type="button" class="btn btn-secondary" (click)="cancelAddingVersion()">Скасувати</button>
+              </div>
+            </div>
+
+        </div>
+      </div>
+      <div *ngIf="isEditing" class="form-group">
+          <label>Додати новий факт:</label>
+          <select class="form-control" [(ngModel)]="newFactType">
+            <option *ngFor="let type of availableFactTypes" [value]="type">{{ type }}</option>
+          </select>
+          <button type="button" class="btn btn-success" (click)="addNewFact()">Додати</button>
+        </div>
+    </div>
+    
+    <div>
+      <div class="form-group">
+        <label for="relatives">Батько:</label>
+        <div *ngFor="let relative of personProfile.relatives">
+          <div *ngIf="relative.relationType === 'Father'">
+            <a href="/person-profile/{{relative.id}}">{{ relative.fullName }}</a>
+            <button *ngIf="isEditing  && personProfile.myRole !== 'Guest'" class="btn btn-danger" (click)="removeRelation(relative.relationId)">Видалити</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="relatives">Мати:</label>
+        <div *ngFor="let relative of personProfile.relatives">
+          <div *ngIf="relative.relationType === 'Mother'">
+            <a href="/person-profile/{{relative.id}}">{{ relative.fullName }}</a>
+            <button *ngIf="isEditing  && personProfile.myRole !== 'Guest'" class="btn btn-danger" (click)="removeRelation(relative.relationId)">Видалити</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="relatives">Діти:</label>
+        <div *ngFor="let relative of personProfile.relatives">
+          <div *ngIf="relative.relationType === 'Child'">
+            <a href="/person-profile/{{relative.id}}">{{ relative.fullName }}</a>
+            <button *ngIf="isEditing  && personProfile.myRole !== 'Guest'" class="btn btn-danger" (click)="removeRelation(relative.relationId)">Видалити</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="relatives">Партнер:</label>
+        <div *ngFor="let relative of personProfile.relatives">
+          <div *ngIf="relative.relationType === 'Partner'">
+            <a href="/person-profile/{{relative.id}}">{{ relative.fullName }}</a>
+            <button *ngIf="isEditing  && personProfile.myRole !== 'Guest'" class="btn btn-danger" (click)="removeRelation(relative.relationId)">Видалити</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="relatives">Інші:</label>
+        <div *ngFor="let relative of personProfile.relatives">
+          <div *ngIf="relative.relationType !== 'Partner' && relative.relationType !== 'Child' && relative.relationType !== 'Father' && relative.relationType !== 'Mother'">
+            <a href="/person-profile/{{relative.id}}">{{ relative.relationType }} - {{ relative.fullName }}</a>
+            <button *ngIf="isEditing  && personProfile.myRole !== 'Guest'" class="btn btn-danger" (click)="removeRelation(relative.relationId)">Видалити</button>
+          </div>
+        </div>
+      </div>
+    </div>      
+
+      <div class="form-group">
+        <button *ngIf="isEditing" class="btn btn-primary mr-2" (click)="saveProfile()">Ок</button>
+        <button *ngIf="isEditing" class="btn btn-secondary" (click)="cancelEdit()">Скасувати</button>
+      </div>
+      <div class="form-group">
+        <button *ngIf="!isEditing" class="btn btn-primary mr-2" (click)="validate()">Перевірити дані</button>
+        <button *ngIf="!isEditing && personProfile.myRole !== 'Guest'"  class="btn btn-primary mr-2" (click)="editProfile()">Редагувати</button>
+        <button *ngIf="!isEditing  && personProfile.myRole !== 'Guest'" class="btn btn-danger" (click)="deleteProfile()">Видалити</button>
+      </div>
+  </div>
+</div>

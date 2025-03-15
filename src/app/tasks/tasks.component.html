@@ -1,0 +1,225 @@
+<div class="container">
+  <div class="list-container">
+    <div class="form-group form-check mb-3">
+      <button class="btn btn-primary btn-sm" (click)="addTaskStart()">Створити нову задачу</button>
+    </div>
+    <div class="form-group form-check mb-3">
+      <label class="form-check-label" for="myFamiliesCheck">Пошук:</label>
+      <input type="text" class="form-control mb-3" placeholder="Назва задачі" [(ngModel)]="taskOptions.taskName" />
+    </div>
+    <div class="form-group form-check mb-3">
+      <input type="checkbox" class="form-check-input" id="myFamiliesCheck" [(ngModel)]="taskOptions.isDone">
+      <label class="form-check-label" for="myFamiliesCheck">Виконані</label>
+    </div>
+    <div class="form-group form-check mb-3">
+      <label for="privacyType">Виконавець:</label>
+      <select class="form-control mb-3" id="privacyType" [(ngModel)]="taskOptions.userLogin">
+        <option *ngFor="let member of members" [ngValue]="member.userLogin">
+          {{ member.userName }} ({{ member.userLogin }}) {{ member.userRole }}
+        </option>
+      </select>
+    </div>
+    <div class="form-group form-check mb-3">
+      <button class="btn btn-primary mb-3" (click)="getTasks()">Знайти</button>
+      <button class="btn btn-secondary mb-3" (click)="free()">Скинути</button>
+    </div>
+
+    <ul class="list-group">
+      <li class="list-group-item mb-3" *ngFor="let task of tasks; let i = index">
+        <div *NgIf="todo(i)" class="alert alert-success" role="alert">
+          Задача ще не виконана
+        </div>
+        <p>Назва: {{ task.name }}</p>
+        <p>Статус: {{ task.isDone ? 'виконано' : 'в процесі' }}</p>
+        <p>Опис: {{ task.description }}</p>
+        <p>Дата створення: {{ task.creationDate }}</p>
+        <p>Виконавець: <a [routerLink]="['/user-profile', task.userLogin]">{{ task.userName }} ({{ task.userLogin }})</a></p>
+        <button class="btn btn-primary btn-sm mb-3" (click)="updateTaskStart(i)">Змінити</button>
+        <button class="btn btn-danger btn-sm mb-3" (click)="deleteTask(task.id)">Видалити</button>
+        <button class="btn btn-secondary btn-sm mb-3" (click)="addStepStart(task.id)">Створити новий крок</button>
+        <ul class="list-group">
+          <li class="list-group-item mb-3" *ngFor="let step of task.steps; let j = index">
+            <p>№: {{ step.stepNum }}</p>
+            <p>Мета: {{ step.purpose }}</p>
+            <p>Джерела: {{ step.source }}</p>
+            <p>Місце знаходження джерел: {{ step.sourceLocation }}</p>
+            <p>Термін: {{ step.term }}</p>
+            <p>Статус: {{ step.isDone ? 'виконано' : 'в процесі' }}</p>
+            <p>Результат: {{ step.result }}</p>
+            <button class="btn btn-primary btn-sm mb-3" (click)="updateStepStart(i, j)">Змінити</button>
+            <button class="btn btn-danger btn-sm mb-3" (click)="deleteStep(step.id)">Видалити</button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+
+
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': addModalVisible }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Додання нової задачі:</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelAdding()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="foodName">Назва:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="newTask.name">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Опис:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="newTask.description">
+              </div>
+              <div class="form-group">
+                <label for="privacyType">Виконавець:</label>
+                <select class="form-control" id="privacyType" [(ngModel)]="newTask.userLogin">
+                  <option *ngFor="let member of members" [ngValue]="member.userLogin">
+                    {{ member.userName }} + ({{ member.userLogin }}) + {{ member.userRole }}
+                  </option>
+                </select>
+              </div>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="addTask()">Ok</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelAdding()">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': updateModalVisible }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Оновлення задачі:</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelUpdating()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="foodName">Назва:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="curTask.name">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Опис:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="curTask.description">
+              </div>
+              <div class="form-group">
+                <label for="privacyType">Виконавець:</label>
+                <select class="form-control" id="privacyType" [(ngModel)]="curTask.userLogin">
+                  <option *ngFor="let member of members" [ngValue]="member.userLogin">
+                    {{ member.userName }} + ({{ member.userLogin }}) + {{ member.userRole }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" id="myFamiliesCheck1" [(ngModel)]="curTask.isDone">
+                <label class="form-check-label" for="myFamiliesCheck1">Виконано</label>
+              </div>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="updateTask()">Ok</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelUpdating()">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': addSModalVisible }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Додання нового кроку:</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelSAdding()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="foodName">Мета:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="newStep.purpose">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Джерела:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="newStep.source">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Місце знаходження джерел:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="newStep.sourceLocation">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Термін:</label>
+                <input type="date" class="form-control" id="foodName" [(ngModel)]="newStep.term">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Результат:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="newStep.result">
+              </div>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="addStep()">Ok</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelSAdding()">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': updateSModalVisible }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Оновлення кроку:</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelSUpdating()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="foodName">Мета:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="curStep.purpose">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Джерела:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="curStep.source">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Місце знаходження джерел:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="curStep.sourceLocation">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Термін:</label>
+                <input type="date" class="form-control" id="foodName" [(ngModel)]="curStep.term">
+              </div>
+              <div class="form-group">
+                <label for="foodName">Результат:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="curStep.result">
+              </div>
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" id="myFamiliesCheck2" [(ngModel)]="curStep.isDone">
+                <label class="form-check-label" for="myFamiliesCheck2">Виконано</label>
+              </div>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="updateStep()">Ok</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelSUpdating()">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>

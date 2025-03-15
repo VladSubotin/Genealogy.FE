@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="list-container">
+    <div class="form-container">
+      <div class="form-check mb-3">
+        <button class="btn btn-primary btn-sm" (click)="addFamilyStart()">Створитити новий сімейний профіль</button>
+      </div>
+      <input type="text" class="form-control mb-3" placeholder="Назва сімейного профілю" [(ngModel)]="familyName" />
+      <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="myFamiliesCheck" [(ngModel)]="showMyFamilies">
+        <label class="form-check-label" for="myFamiliesCheck">Мої сімейні профілі</label>
+      </div>
+      <button class="btn btn-primary mb-3" (click)="serch()">Знайти</button>
+    </div>
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let family of families">
+        <div>
+          {{ family.name }} - Кількість учасників: {{ family.membersCount }} 
+        </div>
+        <button class="btn btn-secondary btn-sm" (click)="seeFamily(family.id)">Деталі</button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': addModalVisible }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Додання нового сімейного профілю:</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelAdding()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="foodName">Назва:</label>
+                <input type="text" class="form-control" id="foodName" [(ngModel)]="newFamily.name">
+              </div>
+              <div class="form-group">
+                <label for="foodDescription">Про родину:</label>
+                <textarea class="form-control" id="foodDescription" [(ngModel)]="newFamily.description"></textarea>
+              </div>
+              <div class="form-group">
+                <input type="file" (change)="onFileSelected($event)">
+                <div *ngIf="newFamily.profileIcon" class="mb-5">
+                    <img [src]="arrayBufferToBase64(newFamily.profileIcon)" alt="Profile Icon" class="img-fluid">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="privacyType">Тип приватності:</label>
+                <select class="form-control" id="privacyType" [(ngModel)]="newFamily.privacyLevel">
+                  <option [ngValue]="0">Публічний</option>
+                  <option [ngValue]="1">Приватний</option>
+                </select>
+              </div>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="addFamily()">Ok</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelAdding()">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,77 @@
+<div class="container">
+    <div class="list-container">
+        <label class="form-check-label" for="myFamiliesCheck">Пошук:</label>
+      <div class="form-group form-check mb-3">
+        <input type="text" class="form-control mb-3" placeholder="Префікс" [(ngModel)]="personOptions.prefix" />
+      </div>
+      <div class="form-group form-check mb-3">
+        <input type="text" class="form-control mb-3" placeholder="Ім'я" [(ngModel)]="personOptions.firstName" />
+      </div>
+      <div class="form-group form-check mb-3">
+        <input type="text" class="form-control mb-3" placeholder="Друге ім'я" [(ngModel)]="personOptions.midleName" />
+      </div>
+      <div class="form-group form-check mb-3">
+        <input type="text" class="form-control mb-3" placeholder="Прізвище" [(ngModel)]="personOptions.lastName" />
+      </div>
+      <div class="form-group form-check mb-3">
+        <input type="text" class="form-control mb-3" placeholder="Суфікс" [(ngModel)]="personOptions.suffix" />
+      </div>
+      <div class="form-group form-check mb-3">
+        <label for="privacyType">Біологічна стать:</label>
+        <select class="form-control mb-3" id="privacyType" [(ngModel)]="personOptions.gender">
+          <option [ngValue]="null"></option>
+          <option [ngValue]="'Male'">Чоловіча</option>
+          <option [ngValue]="'Female'">Жіноча</option>
+        </select>
+      </div>
+      <div class="form-group form-check mb-3">
+        <label for="privacyType">Факти:</label>
+          <div class="form-group form-check mb-3" *ngFor="let fact of personOptions.facts; let i = index">
+            <label for="factType{{i}}">Тип факту:</label>
+            <select class="form-control mb-3" id="factType{{i}}" [(ngModel)]="fact.factType" name="factType{{i}}">
+                <option [ngValue]="'Birth'">Народження</option>
+                <option [ngValue]="'Deth'">Смерть</option>
+                <option [ngValue]="'Marriage'">Одруження</option>
+                <option [ngValue]="'MilitaryService'">Військова служба</option>
+                <option [ngValue]="'Education'">Навчання</option>
+                <option [ngValue]="'Work'">Робота</option>
+                <option [ngValue]="'Other'">Інше</option>
+            </select>
+
+            <label for="location{{i}}">Місце:</label>
+            <input type="text" class="form-control" id="location{{i}}" [(ngModel)]="fact.location" name="location{{i}}">
+            
+            <label for="dateFrom{{i}}">Дата з:</label>
+            <input type="date" class="form-control" id="dateFrom{{i}}" [(ngModel)]="fact.dateFrom" name="dateFrom{{i}}">
+            
+            <label for="dateTo{{i}}">Дата по:</label>
+            <input type="date" class="form-control" id="dateTo{{i}}" [(ngModel)]="fact.dateTo" name="dateTo{{i}}">
+            <div *ngIf="invalidFactIndices.includes(i)" class="alert alert-danger" role="alert">
+              Початкова дата повинна бути не пізніша за кінцеву !
+            </div>
+
+            <button class="btn btn-danger" (click)="deleteFactOption(i)">Видалити</button>
+          </div>
+      </div>
+      <div class="form-group form-check mb-3">
+        <button class="btn btn-primary" (click)="addFactOption()">Додати факт</button>
+      </div>
+      <div class="form-group form-check mb-3">
+        <button class="btn btn-primary mb-3" (click)="getPersons()">Знайти</button>
+        <button class="btn btn-secondary mb-3" (click)="free()">Скинути</button>
+      </div>
+  
+      <ul class="list-group">
+        <li class="list-group-item mb-3" *ngFor="let person of persons | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }; let i = index">
+          <p>{{ person.fullName }}</p>
+          <p (click)="navigateToFamilyProfile(person?.familyId)">Сім'я: {{ person.familyName }}</p>
+          <p>Народження: {{ person.birth?.place }} ({{ person.birth?.dateFrom }} - {{ person.birth?.dateTo }})</p>
+          <p>Смерть: {{ person.deth?.place }} ({{ person.deth?.dateFrom }} - {{ person.deth?.dateTo }})</p>
+          <button class="btn btn-primary btn-sm mb-3" (click)="getPerson(person.id)">Переглянути</button>
+        </li>
+      </ul>  
+      <div class="pagination-controls">
+        <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
+      </div>  
+    </div>
+  </div>
